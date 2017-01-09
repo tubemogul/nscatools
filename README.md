@@ -118,19 +118,3 @@ Contributions that do not pass the basic gofmt, vet and other basic checks
 provided in the Makefile will not be accepted. It's just a question of trying to
 keep a basic code standard. Thanks for your help! :)
 
-
-## TODO
-
-For now the following algorithms are not properly handled, so they need to be
-fixed:
-* 3WAY
-* ARCFOUR
-* WAKE
-* ENIGMA
-* SAFER64
-* SAFER128
-
-Nice to have:
-* get rid of the libmcrypt C bindings to rely only on pure Go
-* write examples
-* write more benchmark
