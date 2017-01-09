@@ -222,7 +222,7 @@ func (p *DataPacket) Decrypt(buffer []byte) error {
 		return err
 	}
 	if algo != "" {
-		err = MCryptDecrypt(algo, buffer, p.Password, p.Ipkt.Iv)
+		err = MCrypt(algo, buffer, p.Password, p.Ipkt.Iv, true)
 	}
 	return err
 }
@@ -256,7 +256,7 @@ func (p *DataPacket) Encrypt(buffer []byte) error {
 		return err
 	}
 	if algo != "" {
-		err = MCryptEncrypt(algo, buffer, p.Password, p.Ipkt.Iv)
+		err = MCrypt(algo, buffer, p.Password, p.Ipkt.Iv, false)
 	}
 	return err
 }
