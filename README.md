@@ -30,14 +30,14 @@ receive. Not very useful as is but simple enough for everybody to understand it.
 package main
 
 import (
-  nsrv "github.com/tubemogul/nscatools"
+  nsca "github.com/tubemogul/nscatools"
   "log"
   "os"
 )
 
 var dbg *log.Logger
 
-func printData(p *nsrv.DataPacket) error {
+func printData(p *nsca.DataPacket) error {
   dbg.Printf("version: %d\n", p.Version)
   dbg.Printf("crc: %d\n", p.Crc)
   dbg.Printf("timestamp: %d\n", p.Timestamp)
@@ -52,8 +52,8 @@ func main() {
   debugHandle := os.Stdout
   dbg = log.New(debugHandle, "[DEBUG] ", log.Ldate|log.Ltime|log.Lshortfile)
 
-  cfg := nsrv.NewConfig("localhost", 5667, nsrv.EncryptXOR, "toto", printData)
-  nsrv.StartServer(cfg, true)
+  cfg := nsca.NewConfig("localhost", 5667, nsca.EncryptXOR, "toto", printData)
+  nsca.StartServer(cfg, true)
 }
 ```
 
@@ -79,12 +79,12 @@ package main
 
 import (
   "fmt"
-  nsrv "github.com/tubemogul/nscatools"
+  nsca "github.com/tubemogul/nscatools"
 )
 
 func main() {
-  cfg := nsrv.NewConfig("localhost", 5667, nsrv.EncryptXOR, "toto", nil)
-  err := nsrv.SendStatus(cfg, "myHost", "my service", nsrv.StateWarning, "You'd better fix me before I go critical")
+  cfg := nsca.NewConfig("localhost", 5667, nsca.EncryptXOR, "toto", nil)
+  err := nsca.SendStatus(cfg, "myHost", "my service", nsca.StateWarning, "You'd better fix me before I go critical")
   if err != nil {
     fmt.Printf("SendStatus returned an error: %s\n", err)
   } else {
