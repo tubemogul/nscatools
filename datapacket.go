@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"io/ioutil"
 	"time"
 )
 
@@ -43,7 +44,7 @@ func NewDataPacket(encryption int, password []byte, ipkt *InitPacket) *DataPacke
 // CalculateCrc returns the Crc of a packet ready to be sent over the network,
 // ignoring the Crc data part of it as it's done in the original nsca code
 func (p *DataPacket) CalculateCrc(buffer []byte) uint32 {
-	crcdPacket := make([]byte, 4304)
+	crcdPacket := make([]byte, len(buffer))
 	copy(crcdPacket, buffer[0:4])
 	copy(crcdPacket[8:], buffer[8:])
 	return crc32.ChecksumIEEE(crcdPacket)
@@ -54,11 +55,15 @@ func (p *DataPacket) CalculateCrc(buffer []byte) uint32 {
 // further.
 func (p *DataPacket) Read(conn io.Reader) error {
 	// We need to read the full packet 1st to check the crc and decrypt it too
-	fullPacket := make([]byte, 4304)
-	if _, err := io.ReadFull(conn, fullPacket); err != nil {
+	fullPacket, err := ioutil.ReadAll(conn)
+	if err != nil {
 		return err
 	}
-
+	
+	if len(fullPacket) != ShortPacketLength && len(fullPacket) != LongPacketLength {
+		return fmt.Errorf("Dropping packet with invalid size: %d", len(fullPacket))
+	}
+	
 	if err := p.Decrypt(fullPacket); err != nil {
 		return err
 	}
@@ -110,7 +115,7 @@ func (p *DataPacket) Write(w io.Writer) error {
 	binary.Write(packet, binary.BigEndian, o)
 	binary.Write(packet, binary.BigEndian, make([]byte, 2))
 
-	buf := make([]byte, 4304)
+	buf := make([]byte, LongPacketLength)
 	copy(buf, packet.Bytes())
 
 	// Calculate the Crc
@@ -303,3 +308,6 @@ const (
 // MaxPacketAge is the number of seconds difference allowed between the
 // initialization packet epoch and the epoch of the data packet received
 const MaxPacketAge = 30
+
+const ShortPacketLength = 720
+const LongPacketLength = 4304
