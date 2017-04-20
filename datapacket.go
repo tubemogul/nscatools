@@ -59,11 +59,11 @@ func (p *DataPacket) Read(conn io.Reader) error {
 	if err != nil {
 		return err
 	}
-	
+
 	if len(fullPacket) != ShortPacketLength && len(fullPacket) != LongPacketLength {
 		return fmt.Errorf("Dropping packet with invalid size: %d", len(fullPacket))
 	}
-	
+
 	if err := p.Decrypt(fullPacket); err != nil {
 		return err
 	}
@@ -309,5 +309,10 @@ const (
 // initialization packet epoch and the epoch of the data packet received
 const MaxPacketAge = 30
 
+// NSCA supports two lengths of the plugin output:
+
+// ShortPacketLength - short one:
 const ShortPacketLength = 720
+
+// LongPacketLength - long one:
 const LongPacketLength = 4304
