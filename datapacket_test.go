@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"hash/crc32"
+	"strings"
 	"testing"
 	"time"
 )
@@ -228,7 +229,7 @@ func TestDataPacketRead(t *testing.T) {
 func TestDataPacketReadWrongSize(t *testing.T) {
 	pkt := NewDataPacket(0, []byte{0x00}, &InitPacket{})
 	if err := pkt.Read(bytes.NewBuffer(make([]byte, 10))); err != nil {
-		if err.Error() != "unexpected EOF" {
+		if !strings.Contains(err.Error(), "Dropping packet with invalid size") {
 			checkEncryptDecryptError(t, pkt, err)
 		}
 	}
